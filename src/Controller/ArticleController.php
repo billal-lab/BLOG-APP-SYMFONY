@@ -65,7 +65,6 @@ class ArticleController extends AbstractController
     public function show(Article $article,ArticleRepository $articleRepository ): Response
     {
         $article_neighbours = $articleRepository->findBy(["category"=>$article->getCategory()]);
-
         return $this->render('article/show.html.twig', [
             'article' => $article,
             'neighbours' => $article_neighbours,

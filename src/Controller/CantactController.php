@@ -22,12 +22,17 @@ class CantactController extends AbstractController
         $form = $this->createForm(CantactType::class, $cantact);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
-                EmailSender::send("test@test.com",
-                "test@test.fr",
-                $cantact->getSubject(),
-                $cantact->getContent(),
-                $mailerInterface
-            );
+                $success = EmailSender::send("test@test.com",
+                    "test@test.fr",
+                    $cantact->getSubject(),
+                    $cantact->getContent(),
+                    $mailerInterface);
+                if($success){
+                    $this->addFlash("success", "votre message a été envoyé");
+                    return $this->redirectToRoute('article_index');
+                }else {
+                    $this->addFlash("danger", "somthing wrong try again");
+                }
         }
         return $this->render('cantact/index.html.twig', [
             'cantactForm' => $form->createView(),
