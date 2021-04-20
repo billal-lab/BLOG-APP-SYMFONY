@@ -147,6 +147,11 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getLogin()
+    {
+        return $this->username;
+    }
+
     /**
      * @return Collection|Comment[]
      */

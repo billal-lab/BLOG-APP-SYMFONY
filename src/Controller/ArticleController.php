@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Form\ArticleType;
 use App\Service\FileUploader;
 use App\Repository\ArticleRepository;
+use App\Service\Paginator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,13 +18,31 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class ArticleController extends AbstractController
 {
+
+    private $paginator;
+
+    private $articleRepository;
+
+    public function __construct(ArticleRepository $articleRepository)
+    {
+        $this->articleRepository = $articleRepository;
+        
+        $this->paginator = new Paginator($articleRepository, 5);
+    }
+    
     /**
      * @Route("/", name="article_index", methods={"GET"})
-     */
-    public function index(ArticleRepository $articleRepository): Response
+    */
+
+    public function index(Request $request): Response
     {
+        $articles = $this->paginator->paginate($request);
+
         return $this->render('article/index.html.twig', [
-            'articles' => $articleRepository->findAll(),
+            'articles' => $articles,
+            'numberOfArticles'=> $this->articleRepository->findNumberOfArticles()[0][1],
+            'limit'=> $this->paginator->getLimit(),
+            'page' => $this->paginator->getPage($request)
         ]);
     }
 
