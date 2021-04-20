@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Article{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between">
+        <div class="col-6 mx-2">
+            <div class="d-flex justify-content-between">
+                <a class="col-6 btn btn-success" href="{{ path('article_edit', {'id': article.id}) }}">edit</a>
+                    {{ include('article/_delete_form.html.twig') }}
+            </div>
+
+            <div class="card">
+                <img class="card-img-top" height="600" src= "{{asset('uploads/images/'~ article.imageName)}}" alt="{{ article.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ article.title }}</h5>
+                    <p class="card-text">{{ article.description }}</p>
+                    <p class="card-text"><small class="text-muted">12/12/2101</small></p>
+                </div>
+                <div>
+                    <p>Commentaires</p>
+                    <p>Commentaires</p>
+                    <p>Commentaires</p>
+                    <p>Commentaires</p>
+                    <p>Commentaires</p>
+                    <p>Commentaires</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="position-fixed">
+                <h3 class="text-center">Articles similaire</h3>
+                <ul>
+                    {% for neighbour in neighbours %}
+                        <li>
+                            <a href="{{ path('article_show',{id: neighbour.id}) }}">
+                                <p>{{neighbour.title}}<p>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

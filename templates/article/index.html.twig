@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Article index{% endblock %}
+
+{% block body %}
+    <div>
+        <h1 class="text-center">Article index</h1>
+        <div class="container">
+            <div class="row justify-content-center">
+            {% for article in articles %}
+                <div class="col-10 mb-4">
+                    <div class="card">
+                        <img class="card-img-top" height="600" src= "{{asset('uploads/images/'~ article.imageName)}}" alt="{{ article.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text">{{ article.description }}</p>
+                            <p class="card-text"><small class="text-muted">12/12/2101</small></p>
+                            <a href="{{ path('article_show',{id: article.id}) }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

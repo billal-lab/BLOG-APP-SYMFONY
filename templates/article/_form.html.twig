@@ -1,0 +1,39 @@
+{# {{ form_start(form,{'attr': {'novalidate': 'novalidate', 'class':'col-md-6 mt-5'}}) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }} #}
+
+<div class = "d-flex justify-content-center">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class':'col-md-6 mt-5'}}) }}
+            <div class="text-danger">
+            {{ form_errors(form.title) }}
+            </div>
+            {{ form_label(form.title) }}
+            {{ form_widget(form.title,{'attr': {'class':'form-control'}}) }}
+
+            <div class="text-danger">
+                {{ form_errors(form.description) }}
+            </div>
+            
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description,{'attr': {'class':'form-control'}}) }}
+
+            <div class="text-danger">
+                {{ form_errors(form.category) }}
+            </div>
+
+            {{ form_label(form.category)}}
+            {{ form_widget(form.category,{'attr': {'class':'form-control'}})}}
+            
+            
+            <div class="text-danger">
+                {{ form_errors(form.image) }}
+            </div>
+
+            {{ form_label(form.image)}}
+            {{ form_widget(form.image,{'attr': {'class':'form-control'}})}}
+
+            <button type="submit" class="btn btn-primary btn-block mt-2">Submit</button>
+
+        {{ form_end(form) }}
+    <div>
