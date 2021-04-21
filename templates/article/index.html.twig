@@ -18,7 +18,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ article.title }}</h5>
                             <p class="card-text">{{ article.description }}</p>
-                            <p class="card-text"><small class="text-muted">12/12/2101</small></p>
+                            <p class="card-text"><small class="text-muted">{{article.createdAt|date("F jS \\a\\t g:ia")}}</small></p>
                             <a href="{{ path('article_show',{id: article.id}) }}" class="stretched-link"></a>
                         </div>
                     </div>

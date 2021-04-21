@@ -20,6 +20,7 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
+     * Recherche le nombre d'articles en fonction du formulaire
      * @return int
     */
     public function findNumberOfArticles($mots=null, $categorie=null)
@@ -27,39 +28,42 @@ class ArticleRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('a')
                     ->select('COUNT(a)');
                     if($mots != null){
-                        $query->where('MATCH_AGAINST(a.title, a.description, a.category) AGAINST (:mots boolean)>0')
+                        $query->where('MATCH_AGAINST(a.title, a.description) AGAINST (:mots boolean)>0')
                             ->setParameter('mots', $mots);
                     }
                     if($categorie != null){
-                        $query->andWhere('a.category like :categorie')
-                            ->setParameter('mots', $categorie);
+                        $query->leftJoin('a.categorie', 'c');
+                        $query->andWhere('c.id = :id')
+                            ->setParameter('id', $categorie->getId());
                     }
         return $query->getQuery()->getResult();
     }
 
     /**
      * Recherche les articles en fonction du formulaire
-     * @return void 
+     * @return array 
      */
-    public function search($mots = null, $categorie = null, $limit=null, $offset=null){
+    public function search($mots = null, $categorie = null, $limit=null, $offset=null, $orderBy = "DESC"){
         $query = $this->createQueryBuilder('a');
         if($mots != null){
-            $query->where('MATCH_AGAINST(a.title, a.description, a.category) AGAINST (:mots boolean)>0')
+            $query->where('MATCH_AGAINST(a.title, a.description) AGAINST (:mots boolean)>0')
                 ->setParameter('mots', $mots);
         }
         if($categorie != null){
-            $query->andWhere('a.category like :categorie')
-                ->setParameter('mots', $categorie);
+            $query->leftJoin('a.categorie', 'c');
+            $query->andWhere('c.id = :id')
+                ->setParameter('id', $categorie->getId());
         }
-
         if($limit !== null && $offset!==null){
             $query->setMaxResults($limit)
                 ->setFirstResult($offset);
         }
-
+        $query->addOrderBy('a.createdAt', 'ASC');
 
         return $query->getQuery()->getResult();
     }
+
+
     // /**
     //  * @return Article[] Returns an array of Article objects
     //  */

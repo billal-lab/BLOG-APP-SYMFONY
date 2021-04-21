@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  * @ORM\Table(name="article", indexes={@ORM\Index(columns={"title", "description"}, flags={"fulltext"})})
+ * @ORM\HasLifecycleCallbacks()
  */
 class Article
 {
@@ -46,9 +47,14 @@ class Article
     private $comments;
 
     /**
-     * @ORM\ManyToOne(targetEntity=category::class, inversedBy="articles")
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles")
      */
     private $categorie;
+
+    /**
+     * @ORM\Column(type="datetime", options={"default" : "CURRENT_TIMESTAMP"})
+     */
+    private $createdAt;
 
     public function __construct()
     {
@@ -97,6 +103,14 @@ class Article
     }
 
     /**
+     * @ORM\PrePersist
+     */
+    public function TimeStampCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /**
      * @return Collection|Comment[]
      */
     public function getComments(): Collection
@@ -134,6 +148,18 @@ class Article
     public function setCategorie(?category $categorie): self
     {
         $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

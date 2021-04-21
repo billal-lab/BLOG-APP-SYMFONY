@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * @Route("/article")
@@ -37,23 +38,24 @@ class ArticleController extends AbstractController
 
     public function index(Request $request): Response
     {
-        // dd($request->get("mots"));
-        $articles = $this->paginator->paginate($request);
 
         $form = $this->createForm(SearchArticleType::class);
         $form->handleRequest($request);
+
         $mots = null;
+        $categorie = null;
 
         if($form->isSubmitted() && $form->isValid()){
             $mots =  $form->getData()["mots"];
+            $categorie =  $form->getData()["categorie"];
         }
         
-        $articles = $this->paginator->paginate($request, $mots);
+        $articles = $this->paginator->paginate($request, $mots,$categorie);
 
         return $this->render('article/index.html.twig', [
             'searchForm'=> $form->createView(),
             'articles' => $articles,
-            'numberOfArticles'=> $this->articleRepository->findNumberOfArticles($mots)[0][1],
+            'numberOfArticles'=> $this->articleRepository->findNumberOfArticles($mots, $categorie)[0][1],
             'limit'=> $this->paginator->getLimit(),
             'page' => $this->paginator->getPage($request)
         ]);
@@ -73,12 +75,15 @@ class ArticleController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $image = $form->get("image")->getData();
+
             if($image!=null){
                 $imageName = $fileUploader->upload($image);
                 $article->setImageName($imageName);
+                // $article->setCreatedAt(date());
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($article);
                 $entityManager->flush();
+                $this->addFlash("success", "Success !");
                 return $this->redirectToRoute('article_index');
             }else{
                 $this->addFlash("danger", "please select an image");
@@ -96,7 +101,8 @@ class ArticleController extends AbstractController
      */
     public function show(Article $article,ArticleRepository $articleRepository ): Response
     {
-        $article_neighbours = $articleRepository->findBy(["category"=>$article->getCategory()]);
+        $article_neighbours = $article->getCategorie()->getArticles();
+
         return $this->render('article/show.html.twig', [
             'article' => $article,
             'neighbours' => $article_neighbours,
