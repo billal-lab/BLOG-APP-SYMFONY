@@ -22,10 +22,11 @@ class Paginator{
         $this->limit = $limit;
     }
 
-    public  function paginate(Request $request):array
+    public  function paginate(Request $request, $mots=null, $category=null):array
     {
         $page = $this->getPage($request);
-        $articles = $this->repository->findBy([],[],$this->limit,($page*$this->limit)-$this->limit);
+        $articles = $this->repository->search($mots, $category, $this->limit, ($page*$this->limit)-$this->limit);
+        // $articles = $this->repository->findBy([],[],$this->limit,($page*$this->limit)-$this->limit);
         return $articles;
     }
 
@@ -40,6 +41,4 @@ class Paginator{
     {
         return $this->limit;
     }
-
-
 }

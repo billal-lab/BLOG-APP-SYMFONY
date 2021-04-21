@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class CommentController extends AbstractController
 {
     /**
-     * @Route("/comment", name="comment", methods="POST")
+     * @Route("/comment", name="comment", methods={"POST"})
      */
     public function new(Request $request, ArticleRepository $articleRepository,UserRepository $userRepository ,EntityManagerInterface $em): Response
     {

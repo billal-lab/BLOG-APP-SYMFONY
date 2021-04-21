@@ -7,10 +7,14 @@
         <h1 class="text-center">Article index</h1>
         <div class="container">
             <div class="row justify-content-center">
+            <div class="col-10 d-flex justify-content-between">
+                {{ form_start(searchForm, {'attr': {'novalidate': 'novalidate'}}) }}
+                {{ form_end(searchForm) }}
+             </div>
             {% for article in articles %}
                 <div class="col-10 mb-4">
                     <div class="card">
-                        <img class="card-img-top" height="600" src= "{{asset('uploads/images/'~ article.imageName)}}" alt="{{ article.title }}">
+                        <img class="card-img-top" height="400"  width="500" src= "{{asset('uploads/images/'~ article.imageName)}}" alt="{{ article.title }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ article.title }}</h5>
                             <p class="card-text">{{ article.description }}</p>

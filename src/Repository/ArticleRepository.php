@@ -22,13 +22,43 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @return int
     */
-    public function findNumberOfArticles()
+    public function findNumberOfArticles($mots=null, $categorie=null)
     {
-        return $this->createQueryBuilder('s')
-            ->select('COUNT(s)')
-            ->getQuery()
-            ->getResult()
-        ;
+        $query = $this->createQueryBuilder('a')
+                    ->select('COUNT(a)');
+                    if($mots != null){
+                        $query->where('MATCH_AGAINST(a.title, a.description, a.category) AGAINST (:mots boolean)>0')
+                            ->setParameter('mots', $mots);
+                    }
+                    if($categorie != null){
+                        $query->andWhere('a.category like :categorie')
+                            ->setParameter('mots', $categorie);
+                    }
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Recherche les articles en fonction du formulaire
+     * @return void 
+     */
+    public function search($mots = null, $categorie = null, $limit=null, $offset=null){
+        $query = $this->createQueryBuilder('a');
+        if($mots != null){
+            $query->where('MATCH_AGAINST(a.title, a.description, a.category) AGAINST (:mots boolean)>0')
+                ->setParameter('mots', $mots);
+        }
+        if($categorie != null){
+            $query->andWhere('a.category like :categorie')
+                ->setParameter('mots', $categorie);
+        }
+
+        if($limit !== null && $offset!==null){
+            $query->setMaxResults($limit)
+                ->setFirstResult($offset);
+        }
+
+
+        return $query->getQuery()->getResult();
     }
     // /**
     //  * @return Article[] Returns an array of Article objects

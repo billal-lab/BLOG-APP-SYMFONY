@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ * @ORM\Table(name="article", indexes={@ORM\Index(columns={"title", "description"}, flags={"fulltext"})})
  */
 class Article
 {
@@ -33,11 +34,6 @@ class Article
      */
     private $title;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Please enter a category")
-     */
-    private $category;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -48,6 +44,11 @@ class Article
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article", orphanRemoval=true)
      */
     private $comments;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=category::class, inversedBy="articles")
+     */
+    private $categorie;
 
     public function __construct()
     {
@@ -79,18 +80,6 @@ class Article
     public function setTitle(?string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -133,6 +122,18 @@ class Article
                 $comment->setArticle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategorie(): ?category
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?category $categorie): self
+    {
+        $this->categorie = $categorie;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
+use App\Form\SearchArticleType;
 use App\Service\FileUploader;
 use App\Repository\ArticleRepository;
 use App\Service\Paginator;
@@ -26,21 +27,33 @@ class ArticleController extends AbstractController
     public function __construct(ArticleRepository $articleRepository)
     {
         $this->articleRepository = $articleRepository;
-        
-        $this->paginator = new Paginator($articleRepository, 5);
+
+        $this->paginator = new Paginator($articleRepository, 2);
     }
     
     /**
-     * @Route("/", name="article_index", methods={"GET"})
+     * @Route("/", name="article_index", methods={"GET", "POST"})
     */
 
     public function index(Request $request): Response
     {
+        // dd($request->get("mots"));
         $articles = $this->paginator->paginate($request);
 
+        $form = $this->createForm(SearchArticleType::class);
+        $form->handleRequest($request);
+        $mots = null;
+
+        if($form->isSubmitted() && $form->isValid()){
+            $mots =  $form->getData()["mots"];
+        }
+        
+        $articles = $this->paginator->paginate($request, $mots);
+
         return $this->render('article/index.html.twig', [
+            'searchForm'=> $form->createView(),
             'articles' => $articles,
-            'numberOfArticles'=> $this->articleRepository->findNumberOfArticles()[0][1],
+            'numberOfArticles'=> $this->articleRepository->findNumberOfArticles($mots)[0][1],
             'limit'=> $this->paginator->getLimit(),
             'page' => $this->paginator->getPage($request)
         ]);
