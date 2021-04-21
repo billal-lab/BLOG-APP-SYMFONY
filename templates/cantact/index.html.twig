@@ -4,7 +4,6 @@
 
 {% block body %}
 
-
 <div class = "d-flex justify-content-center">
     {{ form_start(cantactForm, {'attr': {'novalidate': 'novalidate' ,'class':'col-md-6 mt-5'}}) }}
 
@@ -22,8 +21,6 @@
         
         {{ form_label(cantactForm.content) }}
         {{ form_widget(cantactForm.content,{'attr': {'class':'form-control'}}) }}
-
-
 
         <button type="submit" class="btn btn-primary btn-block mt-2">Submit</button>
 

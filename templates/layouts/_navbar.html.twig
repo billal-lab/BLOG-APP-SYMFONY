@@ -1,22 +1,33 @@
 <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-info d-flex justify-content-between">
     <div class="px-5">
-        <a class="navbar-brand" href="{{ path('article_index') }}">Postbook</a>
+        <a class="navbar-brand" href="{{ path('article_index') }}">CityZens</a>
     </div>
     <div class="px-5" id="navbarNav">
         <ul class="navbar-nav">
+        {% if app.user %}
             <li class="nav-item">
-                <a class="nav-link" href="{{path('article_new')}}">ajouter un article</a>
+                <strong><a class="nav-link" href="{{path('article_index')}}">{{app.user.login}}</a></strong>
             </li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{path('article_new')}}">ajouter un article</a>
+                </li>
+            {% endif %}
             <li class="nav-item">
                 <a class="nav-link" href="{{path('cantact')}}">Cantact</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{path('app_logout')}}">Logout</a>
+            </li>
+        {% else %}
             <li class="nav-item">
                 <a class="nav-link" href="{{path('app_login')}}">Login</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{path('app_register')}}">Register</a>
             </li>
+        {% endif %}
         </ul>
     </div>
     </nav>

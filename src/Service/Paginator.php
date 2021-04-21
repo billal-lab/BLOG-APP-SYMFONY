@@ -9,12 +9,27 @@ use Symfony\Component\HttpFoundation\Request;
 
 
 
-
+/**
+ * le service gérant la pagination et le filtrage
+ * @method Article[]  paginate()
+ * @method int        getPage()
+ * @method int        getLimit()
+ */
 class Paginator{
 
+
+    /**
+     * @var ServiceEntityRepository le repository
+     */
     private $repository;
 
+
+
+    /**
+     * @var int la limit des artcile qu'on veut avoir
+     */
     private $limit;
+
 
     public function __construct(ServiceEntityRepository $repository, int $limit)
     {   
@@ -22,14 +37,23 @@ class Paginator{
         $this->limit = $limit;
     }
 
-    public  function paginate(Request $request, $mots=null, $category=null):array
+
+
+    /**
+     * @return array la list des article correspondant a la pagination
+     */
+    public  function paginate(Request $request, $mots=null, $category=null, $orderBy="DESC"):array
     {
         $page = $this->getPage($request);
-        $articles = $this->repository->search($mots, $category, $this->limit, ($page*$this->limit)-$this->limit);
-        // $articles = $this->repository->findBy([],[],$this->limit,($page*$this->limit)-$this->limit);
+        $articles = $this->repository->search($mots, $category, $this->limit, ($page*$this->limit)-$this->limit, $orderBy );
         return $articles;
     }
 
+
+    /**
+     * @param Request
+     * @return int le numéro de la page
+     */
     public function getPage(Request $request): int
     {
         $page = $request->query->get("page",1);
@@ -37,8 +61,14 @@ class Paginator{
         return $page;
     }
 
+
+    /**
+     * @return int la limit d'article qu'on veut a voir
+     */
     public  function getLimit(): int
     {
         return $this->limit;
     }
+
+    
 }

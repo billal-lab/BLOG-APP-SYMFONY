@@ -4,16 +4,18 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
-use App\Form\SearchArticleType;
-use App\Service\FileUploader;
-use App\Repository\ArticleRepository;
 use App\Service\Paginator;
+use App\Service\FileUploader;
+use App\Form\SearchArticleType;
+use App\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/article")
@@ -28,7 +30,6 @@ class ArticleController extends AbstractController
     public function __construct(ArticleRepository $articleRepository)
     {
         $this->articleRepository = $articleRepository;
-
         $this->paginator = new Paginator($articleRepository, 2);
     }
     
@@ -38,49 +39,51 @@ class ArticleController extends AbstractController
 
     public function index(Request $request): Response
     {
-
         $form = $this->createForm(SearchArticleType::class);
         $form->handleRequest($request);
-
+        
         $mots = null;
         $categorie = null;
+        $order = "DESC";
 
         if($form->isSubmitted() && $form->isValid()){
             $mots =  $form->getData()["mots"];
             $categorie =  $form->getData()["categorie"];
+            if($form->getData()["order"]){
+                $order= "ASC";
+            }
         }
         
-        $articles = $this->paginator->paginate($request, $mots,$categorie);
+        $articles = $this->paginator->paginate($request, $mots,$categorie, $order);
 
         return $this->render('article/index.html.twig', [
             'searchForm'=> $form->createView(),
             'articles' => $articles,
             'numberOfArticles'=> $this->articleRepository->findNumberOfArticles($mots, $categorie)[0][1],
             'limit'=> $this->paginator->getLimit(),
-            'page' => $this->paginator->getPage($request)
+            'page' => $this->paginator->getPage($request),
         ]);
     }
 
     /**
      * @Route("/new", name="article_new", methods={"GET","POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
-    public function new(Request $request, SluggerInterface $slugger): Response
-    {
 
+    public function new(Request $request, SluggerInterface $slugger, EntityManagerInterface $entityManager): Response
+    {
         $fileUploader = new  FileUploader($this->getParameter("images_directory"),  $slugger);
 
         $article = new Article();
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             $image = $form->get("image")->getData();
-
             if($image!=null){
                 $imageName = $fileUploader->upload($image);
                 $article->setImageName($imageName);
-                // $article->setCreatedAt(date());
-                $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($article);
                 $entityManager->flush();
                 $this->addFlash("success", "Success !");
@@ -111,8 +114,9 @@ class ArticleController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="article_edit", methods={"GET","POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
-    public function edit(Request $request, Article $article, SluggerInterface $slugger): Response
+    public function edit(Request $request, Article $article, SluggerInterface $slugger, EntityManagerInterface $entityManager): Response
     {
         $fileUploader = new  FileUploader($this->getParameter("images_directory"),  $slugger);
 
@@ -140,6 +144,7 @@ class ArticleController extends AbstractController
 
     /**
      * @Route("/{id}", name="article_delete", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function delete(Request $request, Article $article): Response
     {

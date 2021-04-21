@@ -20,12 +20,12 @@ class CommentController extends AbstractController
      */
     public function new(Request $request, ArticleRepository $articleRepository,UserRepository $userRepository ,EntityManagerInterface $em): Response
     {
-        $user = $userRepository->findAll()[0];
         $article = $articleRepository->findOneBy(["id"=> $request->get("id")]);
+
         if($article!=null && $request->get("comment")!=""){
             $comment = new Comment();
             $comment->setContent($request->get("comment"));
-            $comment->setAuthor($user);
+            $comment->setAuthor($this->getUser());
             $comment->setArticle($article);
             $em->persist($comment);
             $em->flush();

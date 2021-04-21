@@ -7,10 +7,9 @@
         <h1 class="text-center">Article index</h1>
         <div class="container">
             <div class="row justify-content-center">
-            <div class="col-10 d-flex justify-content-between">
-                {{ form_start(searchForm, {'attr': {'novalidate': 'novalidate'}}) }}
-                {{ form_end(searchForm) }}
-             </div>
+            <div class="col-10 d-flex bg-secondary justify-content-center mb-5">
+                {% include('layouts/_jumbotron.html.twig') %}
+            </div>
             {% for article in articles %}
                 <div class="col-10 mb-4">
                     <div class="card">
@@ -26,6 +25,5 @@
             {% endfor %}
             </div>
         </div>
-        {% include('layouts/_pagination.html.twig') %}
     </div>
 {% endblock %}

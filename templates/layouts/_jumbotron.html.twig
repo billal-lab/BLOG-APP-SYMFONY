@@ -1,0 +1,17 @@
+{{ form_start(searchForm, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="row">
+        {{form_row(searchForm.mots)}}
+        {{form_row(searchForm.categorie,{'attr': {'class': 'col-12 mb-3'}})}}
+        {{form_row(searchForm.order)}}
+        {{form_row(searchForm.rechercher)}}
+    </div>
+    <div class="row mt-4">
+        <div class="d-flex justify-content-center">
+            {% for i in 1..((numberOfArticles/limit)|round)%}
+                {% if i != 0 %}
+                    <input type="submit" class="mx-2 px-2" style="{{ page==i ? 'background-color : #0000FF; color: #FFFFFF' : ''  }}" name="page" value={{i}}>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{{ form_end(searchForm) }}

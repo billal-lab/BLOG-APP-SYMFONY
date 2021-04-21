@@ -22,7 +22,7 @@ class CantactController extends AbstractController
         $form = $this->createForm(CantactType::class, $cantact);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
-                $success = EmailSender::send("test@test.com",
+                $success = EmailSender::send($this->getUser()->getEmail(),
                     "test@test.fr",
                     $cantact->getSubject(),
                     $cantact->getContent(),

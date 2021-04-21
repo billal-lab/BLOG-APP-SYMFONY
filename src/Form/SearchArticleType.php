@@ -10,6 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class SearchArticleType extends AbstractType
 {
@@ -25,13 +26,21 @@ class SearchArticleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->setMethod("get")
             ->add('mots', SearchType::class, [
                 'label' => false,
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control mb-3',
                     'placeholder' => 'Entrez un ou plusieurs mots-clés'
                 ],
                 'required' => false
+            ])
+            ->add('order', CheckboxType::class, [
+                'label'    => 'Plus encien ? ',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-check-input mx-2'
+                ],
             ])
             ->add('categorie', ChoiceType::class, [
                 'placeholder' => 'choisir une categorie',
@@ -46,9 +55,9 @@ class SearchArticleType extends AbstractType
                     return $category ? ['class' => 'category_'.strtolower($category->getName())] : [];
                 },
             ])
-            ->add('Rechercher', SubmitType::class, [
+            ->add('rechercher', SubmitType::class, [
                 'attr' => [
-                    'class' => 'btn btn-primary',
+                    'class' => 'btn btn-primary mt-3',
                 ]
             ])
         ;
@@ -57,7 +66,8 @@ class SearchArticleType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            'method' => "get",
+            'crsf_protection' => false
         ]);
     }
 }
